@@ -42,3 +42,14 @@ frontend/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Paper / Research docs
+*.tex
+*.md
+!README.md
+
+# Photos
+Saved Pictures/
+
+# Static build output
+static/

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Paper, Chip } from '@mui/material';
+import { Grid, Typography, Box, Paper, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import { People, EventNote, BarChart, Book } from '@mui/icons-material';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import StatsCard from '../../components/StatsCard';
@@ -12,6 +12,20 @@ export default function TeacherDashboard() {
     const { user } = useAuth();
     const [subjects, setSubjects] = useState([]);
     const [stats, setStats] = useState(null);
+    const [showNewSubject, setShowNewSubject] = useState(false);
+    const [newSubjectName, setNewSubjectName] = useState('');
+
+    const createSubject = async () => {
+        if (!newSubjectName.trim()) return;
+        try {
+            const res = await subjectsAPI.create(newSubjectName.trim());
+            setSubjects(prev => [...prev, res.data]);
+            setShowNewSubject(false);
+            setNewSubjectName('');
+        } catch (err) {
+            console.error('Failed to create subject', err);
+        }
+    };
 
     useEffect(() => {
         subjectsAPI.list().then(r => setSubjects(r.data)).catch(() => { });
@@ -95,11 +109,22 @@ export default function TeacherDashboard() {
                 {/* Subjects List */}
                 <Grid item xs={12} md={7}>
                     <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #eee' }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
-                            Your Subjects
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                            <Typography variant="h6" fontWeight={600}>
+                                Your Subjects
+                            </Typography>
+                            <Button variant="outlined" size="small" onClick={() => setShowNewSubject(true)}>
+                                + New Subject
+                            </Button>
+                        </Box>
+                        
                         {subjects.length === 0 ? (
-                            <Typography color="text.secondary">No subjects yet. Create one to get started.</Typography>
+                            <Box sx={{ py: 3, textAlign: 'center' }}>
+                                <Typography color="text.secondary">No subjects yet. Create one to start marking attendance.</Typography>
+                                <Button variant="contained" sx={{ mt: 2 }} onClick={() => setShowNewSubject(true)}>
+                                    Create Subject
+                                </Button>
+                            </Box>
                         ) : (
                             subjects.map((sub) => (
                                 <Paper key={sub.id} variant="outlined"
@@ -119,6 +144,26 @@ export default function TeacherDashboard() {
                     </Paper>
                 </Grid>
             </Grid>
+            
+            {/* New Subject Dialog */}
+            <Dialog open={showNewSubject} onClose={() => setShowNewSubject(false)}>
+                <DialogTitle>Create New Subject</DialogTitle>
+                <DialogContent>
+                    <TextField 
+                        fullWidth 
+                        label="Subject Name" 
+                        variant="outlined" 
+                        value={newSubjectName}
+                        onChange={(e) => setNewSubjectName(e.target.value)} 
+                        sx={{ mt: 1, minWidth: 300 }} 
+                        autoFocus
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowNewSubject(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={createSubject} disabled={!newSubjectName.trim()}>Create</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

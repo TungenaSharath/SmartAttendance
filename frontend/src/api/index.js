@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Use empty string to support relative domain host routing (HTTP/HTTPS agnostic)
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 const api = axios.create({
     baseURL: API_BASE,
-    headers: { 'Content-Type': 'application/json' },
 });
 
 // Attach JWT token to every request
@@ -103,9 +103,11 @@ export const attendanceAPI = {
 
 // ── Staff Attendance ─────────────────────────────────────────
 export const staffAttendanceAPI = {
-    mark: (imageFile) => {
+    mark: (data) => {
         const form = new FormData();
-        form.append('image', imageFile);
+        form.append('image', data.image);
+        if (data.lat) form.append('lat', data.lat);
+        if (data.lng) form.append('lng', data.lng);
         return api.post('/api/staff-attendance/mark', form);
     },
     today: (deptId) => api.get('/api/staff-attendance/today', { params: { department_id: deptId } }),
@@ -168,6 +170,12 @@ export const adminAPI = {
             params: { department_id: deptId },
             responseType: 'blob',
         }),
+    getSettings: () => api.get('/api/admin/settings'),
+    updateSettings: (data) => {
+        const form = new FormData();
+        Object.entries(data).forEach(([k, v]) => { if (v != null) form.append(k, v); });
+        return api.post('/api/admin/settings', form);
+    },
 };
 
 // ── Analytics ────────────────────────────────────────────────

@@ -178,3 +178,31 @@ def get_audit_log(
 ):
     """Get recent audit log entries."""
     return db.get_audit_log(limit)
+
+
+@router.get("/settings")
+def get_settings(user: dict = Depends(get_admin)):
+    """Get system settings."""
+    return {
+        "campus_lat": db.get_setting("campus_lat", "17.3916"),
+        "campus_lng": db.get_setting("campus_lng", "78.3190"),
+        "campus_radius": db.get_setting("campus_radius", "500"),
+    }
+
+
+@router.post("/settings")
+def update_settings(
+    campus_lat: str = Form("17.3916"),
+    campus_lng: str = Form("78.3190"),
+    campus_radius: str = Form("500"),
+    user: dict = Depends(get_admin),
+):
+    """Update system settings."""
+    db.set_setting("campus_lat", campus_lat)
+    db.set_setting("campus_lng", campus_lng)
+    db.set_setting("campus_radius", campus_radius)
+    
+    db.add_audit_log(user["user_id"], "UPDATE_SETTINGS", "system", None, "Updated campus geofence coordinates")
+    
+    return {"ok": True}
+

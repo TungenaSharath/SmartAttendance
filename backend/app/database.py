@@ -144,6 +144,11 @@ def init_db():
             created_at  TEXT    DEFAULT (datetime('now'))
         );
 
+        CREATE TABLE IF NOT EXISTS system_settings (
+            key   TEXT PRIMARY KEY,
+            value TEXT
+        );
+
         -- Indexes for performance
         CREATE INDEX IF NOT EXISTS idx_attendance_session ON attendance(session_id);
         CREATE INDEX IF NOT EXISTS idx_attendance_student ON attendance(student_id);
@@ -1101,3 +1106,26 @@ def get_institution_stats() -> dict:
 
     conn.close()
     return stats
+
+
+# ══════════════════════════════════════════════════════════════════════
+# SYSTEM SETTINGS
+# ══════════════════════════════════════════════════════════════════════
+
+def get_setting(key: str, default: str = None) -> str:
+    """Retrieve a system setting by key."""
+    conn = _get_conn()
+    row = conn.execute("SELECT value FROM system_settings WHERE key = ?", (key,)).fetchone()
+    conn.close()
+    return row["value"] if row else default
+
+
+def set_setting(key: str, value: str):
+    """Set a system setting (upsert)."""
+    conn = _get_conn()
+    conn.execute(
+        "INSERT INTO system_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (key, value)
+    )
+    conn.commit()
+    conn.close()

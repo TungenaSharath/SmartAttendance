@@ -8,7 +8,7 @@ import {
 import {
     Menu as MenuIcon, Dashboard, People, EventNote, Assignment,
     BarChart, Business, AdminPanelSettings, Logout, Person,
-    FaceRetouchingNatural, HowToReg, CalendarMonth, Group
+    FaceRetouchingNatural, HowToReg, CalendarMonth, Group, Settings as SettingsIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,6 +18,7 @@ const NAV_ITEMS = {
     TEACHER: [
         { label: 'Dashboard', icon: <Dashboard />, path: '/teacher' },
         { label: 'Mark Attendance', icon: <FaceRetouchingNatural />, path: '/teacher/attendance' },
+        { label: 'Manage Students', icon: <Group />, path: '/teacher/students' },
         { label: 'Staff Check-in', icon: <HowToReg />, path: '/teacher/staff-attendance' },
         { label: 'Apply Leave', icon: <CalendarMonth />, path: '/teacher/leave' },
         { label: 'Leave History', icon: <EventNote />, path: '/teacher/leave-history' },
@@ -36,6 +37,7 @@ const NAV_ITEMS = {
         { label: 'Teachers', icon: <People />, path: '/admin/teachers' },
         { label: 'Reports', icon: <BarChart />, path: '/admin/reports' },
         { label: 'System Metrics', icon: <AdminPanelSettings />, path: '/admin/metrics' },
+        { label: 'Settings', icon: <SettingsIcon />, path: '/admin/settings' },
     ],
 };
 

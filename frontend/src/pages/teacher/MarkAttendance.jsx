@@ -40,11 +40,11 @@ export default function MarkAttendance() {
     }, [selSession]);
 
     const startCamera = async () => {
+        setError('');
         try {
             const s = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment', width: { ideal: 1280 } }
             });
-            videoRef.current.srcObject = s;
             setStream(s);
             setCameraActive(true);
         } catch (e) {
@@ -52,8 +52,17 @@ export default function MarkAttendance() {
         }
     };
 
+    useEffect(() => {
+        if (cameraActive && stream && videoRef.current) {
+            videoRef.current.srcObject = stream;
+            videoRef.current.play().catch(e => console.error(e));
+        }
+    }, [cameraActive, stream]);
+
     const stopCamera = () => {
-        stream?.getTracks().forEach(t => t.stop());
+        if (stream) {
+            stream.getTracks().forEach(t => t.stop());
+        }
         setStream(null);
         setCameraActive(false);
     };
@@ -105,6 +114,19 @@ export default function MarkAttendance() {
             setShowNewSession(false);
         } catch (e) {
             setError(e.response?.data?.detail || 'Failed');
+        }
+    };
+
+    const handleManualMark = async (studentId, currentStatus) => {
+        if (!selSession) return;
+        const newStatus = currentStatus === 'Present' ? 'Absent' : 'Present';
+        try {
+            await attendanceAPI.update(selSession, studentId, newStatus);
+            // Refresh to update local state
+            const r = await attendanceAPI.get(selSession);
+            setAttendance(r.data);
+        } catch (err) {
+            setError(err.response?.data?.detail || 'Failed to update attendance');
         }
     };
 
@@ -191,6 +213,7 @@ export default function MarkAttendance() {
                                 <TableCell>Status</TableCell>
                                 <TableCell>Confidence</TableCell>
                                 <TableCell>Method</TableCell>
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -204,6 +227,16 @@ export default function MarkAttendance() {
                                     </TableCell>
                                     <TableCell>{(a.confidence * 100).toFixed(1)}%</TableCell>
                                     <TableCell><Chip label={a.method} size="small" variant="outlined" /></TableCell>
+                                    <TableCell align="right">
+                                        <Button
+                                            size="small"
+                                            variant={a.status === 'Present' ? "outlined" : "contained"}
+                                            color={a.status === 'Present' ? "warning" : "success"}
+                                            onClick={() => handleManualMark(a.student_id, a.status)}
+                                        >
+                                            {a.status === 'Present' ? 'Mark Absent' : 'Mark Present'}
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

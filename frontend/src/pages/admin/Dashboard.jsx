@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Grid, Typography, Box, Paper, Button, Chip } from '@mui/material';
-import { Business, People, School, BarChart, EventNote, Warning } from '@mui/icons-material';
-import { BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { Business, People, School, BarChart, EventNote, Warning, TrendingUp } from '@mui/icons-material';
+import { BarChart as ReBarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import StatsCard from '../../components/StatsCard';
-import { adminAPI } from '../../api';
+import { adminAPI, analyticsAPI } from '../../api';
 
 export default function AdminDashboard() {
     const [data, setData] = useState(null);
     const [depts, setDepts] = useState([]);
+    const [trends, setTrends] = useState([]);
 
     useEffect(() => {
         adminAPI.dashboard().then(r => setData(r.data)).catch(() => { });
         adminAPI.departments().then(r => setDepts(r.data)).catch(() => { });
+        analyticsAPI.dailyTrends(14).then(r => setTrends(r.data)).catch(() => {});
     }, []);
 
     const chartData = depts.map(d => ({
@@ -64,26 +66,56 @@ export default function AdminDashboard() {
             </Grid>
 
             {/* Department Comparison */}
-            <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #eee' }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>Department Comparison</Typography>
-                {chartData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={300}>
-                        <ReBarChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                            <XAxis dataKey="name" fontSize={12} />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="students" fill="#4caf50" name="Students" radius={[4, 4, 0, 0]} />
-                            <Bar dataKey="teachers" fill="#2196f3" name="Teachers" radius={[4, 4, 0, 0]} />
-                        </ReBarChart>
-                    </ResponsiveContainer>
-                ) : (
-                    <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-                        No department data. Create departments to see comparisons.
-                    </Typography>
-                )}
-            </Paper>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #eee' }}>
+                        <Typography variant="h6" fontWeight={600} gutterBottom>Department Comparison</Typography>
+                        {chartData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height={300}>
+                                <ReBarChart data={chartData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                    <XAxis dataKey="name" fontSize={12} />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="students" fill="#4caf50" name="Students" radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey="teachers" fill="#2196f3" name="Teachers" radius={[4, 4, 0, 0]} />
+                                </ReBarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+                                No department data. Create departments to see comparisons.
+                            </Typography>
+                        )}
+                    </Paper>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #eee' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <TrendingUp sx={{ mr: 1, color: 'primary.main' }} />
+                            <Typography variant="h6" fontWeight={600}>System Daily Trend</Typography>
+                        </Box>
+                        {trends.length > 0 ? (
+                            <ResponsiveContainer width="100%" height={300}>
+                                <LineChart data={trends}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                    <XAxis dataKey="day" fontSize={12} />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Line type="monotone" dataKey="attendance_pct" stroke="#2196f3" strokeWidth={3} name="Attendance %" activeDot={{ r: 8 }} />
+                                    <Line type="monotone" dataKey="present" stroke="#4caf50" strokeWidth={2} name="Present" />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+                                No trend data available for the last 14 days.
+                            </Typography>
+                        )}
+                    </Paper>
+                </Grid>
+            </Grid>
         </Box>
     );
 }

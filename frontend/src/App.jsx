@@ -4,13 +4,13 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 
-// Teacher pages
 import TeacherDashboard from './pages/teacher/Dashboard';
 import MarkAttendance from './pages/teacher/MarkAttendance';
 import StaffAttendance from './pages/teacher/StaffAttendance';
 import LeaveApply from './pages/teacher/LeaveApply';
 import LeaveHistory from './pages/teacher/LeaveHistory';
 import TeacherAnalytics from './pages/teacher/Analytics';
+import Students from './pages/teacher/Students';
 
 // HOD pages
 import HodDashboard from './pages/hod/Dashboard';
@@ -25,6 +25,7 @@ import Departments from './pages/admin/Departments';
 import Teachers from './pages/admin/Teachers';
 import Reports from './pages/admin/Reports';
 import SystemMetrics from './pages/admin/SystemMetrics';
+import Settings from './pages/admin/Settings';
 
 const theme = createTheme({
   palette: {
@@ -78,6 +79,7 @@ function AppRoutes() {
       }>
         <Route index element={<TeacherDashboard />} />
         <Route path="attendance" element={<MarkAttendance />} />
+        <Route path="students" element={<Students />} />
         <Route path="staff-attendance" element={<StaffAttendance />} />
         <Route path="leave" element={<LeaveApply />} />
         <Route path="leave-history" element={<LeaveHistory />} />
@@ -108,6 +110,7 @@ function AppRoutes() {
         <Route path="teachers" element={<Teachers />} />
         <Route path="reports" element={<Reports />} />
         <Route path="metrics" element={<SystemMetrics />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/login" />} />

@@ -11,12 +11,42 @@ from app import database as db
 router = APIRouter(prefix="/api/staff-attendance", tags=["Staff Attendance"])
 
 
+import math
+
+def _haversine(lat1, lon1, lat2, lon2):
+    R = 6371000  # radius of Earth in meters
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi, dlambda = math.radians(lat2 - lat1), math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2)**2
+    return R * (2 * math.atan2(math.sqrt(a), math.sqrt(1 - a)))
+
 @router.post("/mark")
 def mark_staff_attendance(
     image: UploadFile = File(...),
+    lat: str = Form(None),
+    lng: str = Form(None),
     user: dict = Depends(get_teacher),
 ):
-    """Mark staff attendance via face recognition."""
+    """Mark staff attendance via face recognition and geofencing."""
+    # Check Geofencing first (Defaults to CBIT College, Hyderabad)
+    c_lat_str = db.get_setting("campus_lat", "17.3916")
+    c_lng_str = db.get_setting("campus_lng", "78.3190")
+    c_radius_str = db.get_setting("campus_radius", "500")
+    
+    if c_lat_str and c_lng_str:
+        if not lat or not lng:
+            raise HTTPException(400, "Location tracking required for attendance. Please allow location access in your browser.")
+        try:
+            c_lat, c_lng = float(c_lat_str), float(c_lng_str)
+            u_lat, u_lng = float(lat), float(lng)
+            radius = float(c_radius_str)
+            
+            distance = _haversine(c_lat, c_lng, u_lat, u_lng)
+            if distance > radius:
+                raise HTTPException(400, f"Outside campus geofence. Distance: {distance:.0f}m (Allowed: {radius}m)")
+        except ValueError:
+            pass
+
     import cv2
     import numpy as np
     import base64
