@@ -22,10 +22,11 @@ for d in [DATA_DIR, UPLOAD_DIR, REPORT_DIR]:
 # ── Model Settings ────────────────────────────────────────────────────
 MODEL_PACK = os.environ.get("ARCFACE_MODEL", "buffalo_l")
 DET_SIZE = (640, 640)
+FAST_DET_SIZE = (480, 480)
 
 # ── Recognition Thresholds ────────────────────────────────────────────
 SIMILARITY_THRESHOLD = float(os.environ.get("SIM_THRESHOLD", "0.45"))
-DETECTION_CONFIDENCE = float(os.environ.get("DET_CONFIDENCE", "0.5"))
+DETECTION_CONFIDENCE = float(os.environ.get("DET_CONFIDENCE", "0.45"))
 
 # ── Registration ──────────────────────────────────────────────────────
 MIN_REGISTRATION_IMAGES = 1
@@ -49,6 +50,11 @@ JWT_SECRET = _get_jwt_secret()
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_HOURS = 24
 
-# ── Server ────────────────────────────────────────────────────────────
-HOST = "0.0.0.0"
-PORT = 8000
+# ── Server & Cloud Deployment ─────────────────────────────────────────
+HOST = os.environ.get("HOST", "0.0.0.0")
+PORT = int(os.environ.get("PORT", "8000"))
+WORKERS = int(os.environ.get("WORKERS", "2"))
+APP_ENV = os.environ.get("APP_ENV", "production")
+
+_raw_cors = os.environ.get("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000,*")
+CORS_ORIGINS = [origin.strip() for origin in _raw_cors.split(",") if origin.strip()]

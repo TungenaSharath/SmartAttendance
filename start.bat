@@ -1,33 +1,40 @@
 @echo off
 setlocal
-title Smart Attendance Server
+title SmartAttendance Startup Engine
 
-:: Find dynamically active IPv4 Address
-for /f "tokens=14" %%i in ('ipconfig ^| findstr /i "IPv4"') do set LOCAL_IP=%%i
+cls
+echo =====================================================================
+echo           🚀 SMARTATTENDANCE - ONE-CLICK STARTUP ENGINE
+echo =====================================================================
+echo.
+echo  [1/3] Seeding demo pilot data...
+python seed_pilot.py --institution "CBIT Engineering College" --teacher "Prof. Sharma" --subject "Computer Vision & AI"
 
 echo.
-echo ========================================================
-echo        SMART ATTENDANCE SYSTEM - STARTUP SCRIPT
-echo ========================================================
-echo.
-echo Please leave this black window open. If you close it, 
-echo the Attendance System will stop working.
-echo.
-echo --------------------------------------------------------
-echo To open the system on your LAPTOP browser, click here:
-echo -^> https://localhost:8000
-echo.
-echo To open the system on your PHONE browser (Same WiFi):
-echo -^> https://%LOCAL_IP%:8000
-echo --------------------------------------------------------
-echo.
-echo Starting the server now and opening browser...
+echo  [2/3] Starting FastAPI AI Backend (Port 8000)...
+start "SmartAttendance API Backend" cmd /k "python -m uvicorn main:app --host 0.0.0.0 --port 8000"
 
-:: Open user's default web browser
-start https://localhost:8000
+echo.
+echo  [3/3] Starting Vite React Frontend (Port 5173)...
+start "SmartAttendance React Frontend" cmd /k "cd frontend && npm run dev"
 
-:: Run the FastAPI Uvicorn Server (Multi-Role Platform)
-cd backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --ssl-certfile ../certs/cert.pem --ssl-keyfile ../certs/key.pem
-
-pause
+echo.
+echo =====================================================================
+echo  ✨ SUCCESS! Both Backend & Frontend are running in separate windows.
+echo =====================================================================
+echo.
+echo  🌐 Frontend App  : http://localhost:5173
+echo  ⚙️  Backend API   : http://localhost:8000/api/health
+echo.
+echo  🔑 DEMO LOGIN CREDENTIALS:
+echo     - Teacher ID : FAC2026
+echo     - Password   : password123
+echo.
+echo =====================================================================
+echo.
+echo  Opening http://localhost:5173 in your default browser now...
+timeout /t 3 >nul
+start http://localhost:5173
+echo.
+echo  Press any key to exit this window (Server windows will keep running).
+pause >nul

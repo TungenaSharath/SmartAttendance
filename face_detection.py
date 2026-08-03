@@ -18,39 +18,61 @@ def init_detector() -> FaceAnalysis:
     global _app
     if _app is not None:
         return _app
-    _app = FaceAnalysis(name=MODEL_PACK, providers=["CPUExecutionProvider"])
+    # Enable CPU execution provider with optimized multi-threading
+    providers = [("CPUExecutionProvider", {
+        "intra_op_num_threads": 4,
+        "inter_op_num_threads": 2
+    })]
+    try:
+        _app = FaceAnalysis(name=MODEL_PACK, providers=providers)
+    except Exception:
+        _app = FaceAnalysis(name=MODEL_PACK, providers=["CPUExecutionProvider"])
     _app.prepare(ctx_id=-1, det_size=DET_SIZE)
     return _app
 
 
-def detect_faces(image: np.ndarray) -> list[dict]:
+def detect_faces(image: np.ndarray, fast_mode: bool = False) -> list[dict]:
     """
     Detect all faces in an image.
 
     Args:
         image: BGR numpy array (as from cv2.imread)
+        fast_mode: If True, resizes frame for rapid video detection while maintaining accuracy.
 
     Returns:
-        List of dicts, each with:
-            - bbox: [x1, y1, x2, y2]
-            - score: detection confidence
-            - landmarks: 5 keypoints (2 eyes, nose, 2 mouth corners)
-            - aligned_face: 112×112 aligned crop (ready for embedding)
-            - embedding: 512-d normalised embedding
+        List of dicts with bbox, score, landmarks, embedding.
     """
     app = init_detector()
-    faces = app.get(image)
+    
+    scale = 1.0
+    proc_img = image
+    if fast_mode:
+        h, w = image.shape[:2]
+        max_dim = max(h, w)
+        if max_dim > 640:
+            scale = 640.0 / max_dim
+            proc_img = cv2.resize(image, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_LINEAR)
+            
+    faces = app.get(proc_img)
 
     results = []
     for face in faces:
         if face.det_score < DETECTION_CONFIDENCE:
             continue
+            
+        bbox = face.bbox
+        landmarks = face.kps
+        if scale != 1.0:
+            bbox = bbox / scale
+            if landmarks is not None:
+                landmarks = landmarks / scale
+
         results.append({
-            "bbox": face.bbox.astype(int).tolist(),
+            "bbox": bbox.astype(int).tolist(),
             "score": float(face.det_score),
-            "landmarks": face.kps.astype(int).tolist() if face.kps is not None else None,
-            "aligned_face": face.normed_embedding is not None,  # boolean flag
-            "embedding": face.normed_embedding,  # 512-d vector or None
+            "landmarks": landmarks.astype(int).tolist() if landmarks is not None else None,
+            "aligned_face": face.normed_embedding is not None,
+            "embedding": face.normed_embedding,
             "age": getattr(face, "age", None),
             "gender": getattr(face, "gender", None),
         })

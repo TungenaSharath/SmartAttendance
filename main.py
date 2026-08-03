@@ -7,6 +7,7 @@ import os
 import base64
 import uuid
 import time
+import asyncio
 import cv2
 import numpy as np
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request, Depends
@@ -20,16 +21,18 @@ import database as db
 from auth import hash_password, verify_password, create_token, get_current_teacher
 from face_detection import init_detector
 from embedding import compute_embedding_from_image
-from recognition import process_frame, mark_attendance_from_frame
+from recognition import process_frame, mark_attendance_from_frame, clear_embedding_cache, clear_session_marked_cache
 from reporting import generate_csv_report, get_session_summary
+
+_SERVER_START_TIME = time.time()
 
 # ── App setup ─────────────────────────────────────────────────────────
 app = FastAPI(title="Classroom Attendance System", version="2.0.0")
 
-# CORS middleware for React frontend
+# CORS middleware for dynamic production origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=config.CORS_ORIGINS if "*" not in config.CORS_ORIGINS else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,6 +50,22 @@ async def startup():
     print(f"[*] Loading InsightFace model '{config.MODEL_PACK}' ...")
     init_detector()
     print("[OK] Model loaded and ready.")
+
+
+@app.get("/api/health")
+async def health_check():
+    """Cloud monitoring & container healthcheck endpoint."""
+    return {
+        "status": "healthy",
+        "app": "SmartAttendance AI Engine",
+        "version": "2.0.0",
+        "environment": config.APP_ENV,
+        "model_pack": config.MODEL_PACK,
+        "det_size": config.DET_SIZE,
+        "fast_det_size": config.FAST_DET_SIZE,
+        "similarity_threshold": config.SIMILARITY_THRESHOLD,
+        "uptime_sec": round(time.time() - _SERVER_START_TIME, 2)
+    }
 
 
 # ── Helpers ───────────────────────────────────────────────────────────
@@ -186,6 +205,7 @@ async def add_student(
         db.delete_student(student_db_id)
         raise HTTPException(400, "No faces detected in any uploaded images. Please upload clear face photos.")
 
+    clear_embedding_cache(subject_id)
     return {
         "message": f"Student '{name}' added",
         "student_id": student_db_id,
@@ -215,6 +235,7 @@ async def edit_student(
     if not student or student["subject_id"] != subject_id:
         raise HTTPException(404, "Student not found in this subject")
     db.edit_student(student_id, name, roll_number)
+    clear_embedding_cache(subject_id)
     return {"message": f"Student updated"}
 
 
@@ -228,6 +249,7 @@ async def delete_student(
     if not student or student["subject_id"] != subject_id:
         raise HTTPException(404, "Student not found in this subject")
     db.delete_student(student_id)
+    clear_embedding_cache(subject_id)
     return {"message": "Student deleted"}
 
 
@@ -266,7 +288,7 @@ async def mark_attendance(
     t0 = time.time()
     raw = await image.read()
     img = _read_image(raw)
-    result = mark_attendance_from_frame(session_id, session["subject_id"], img)
+    result = await asyncio.to_thread(mark_attendance_from_frame, session_id, session["subject_id"], img, fast_mode=False)
     scan_ms = round((time.time() - t0) * 1000)
     annotated_b64 = _encode_image_b64(result["annotated_image"])
     return {
@@ -290,7 +312,7 @@ async def process_live_frame(
     img = _read_image(raw)
 
     if session_id:
-        result = mark_attendance_from_frame(session_id, subject_id, img)
+        result = await asyncio.to_thread(mark_attendance_from_frame, session_id, subject_id, img, fast_mode=True)
         annotated_b64 = _encode_image_b64(result["annotated_image"])
         return {
             "marked": result["marked"],
@@ -299,7 +321,7 @@ async def process_live_frame(
             "annotated_image": annotated_b64,
         }
     else:
-        result = process_frame(img, subject_id)
+        result = await asyncio.to_thread(process_frame, img, subject_id, fast_mode=True)
         annotated_b64 = _encode_image_b64(result["annotated_image"])
         return {
             "detections": result["detections"],
@@ -318,6 +340,7 @@ async def update_attendance(
     if status not in ("Present", "Absent"):
         raise HTTPException(400, "Status must be 'Present' or 'Absent'")
     db.update_attendance(session_id, student_db_id, status)
+    clear_session_marked_cache(session_id)
     return {"message": "Attendance updated", "status": status}
 
 

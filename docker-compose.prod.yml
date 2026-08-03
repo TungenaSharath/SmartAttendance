@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  smart-attendance-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart_attendance_pilot_api
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - APP_ENV=production
+      - HOST=0.0.0.0
+      - PORT=8000
+      - WORKERS=2
+      - JWT_SECRET=${JWT_SECRET:-super_secret_pilot_key_2026_x92a}
+      - SIM_THRESHOLD=${SIM_THRESHOLD:-0.45}
+      - DET_CONFIDENCE=${DET_CONFIDENCE:-0.45}
+      - ARCFACE_MODEL=${ARCFACE_MODEL:-buffalo_l}
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+    volumes:
+      - attendance_data:/app/data
+      - attendance_uploads:/app/uploads
+      - attendance_reports:/app/reports
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  attendance_data:
+  attendance_uploads:
+  attendance_reports:
