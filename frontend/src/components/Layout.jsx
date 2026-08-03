@@ -10,6 +10,7 @@ import {
     FaceRetouchingNatural, HowToReg, CalendarMonth, Group, Settings as SettingsIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import PageTransition from './PageTransition';
 
 const DRAWER_WIDTH = 260;
 
@@ -199,7 +200,9 @@ export default function Layout() {
                     </AppBar>
                 )}
                 <Box sx={{ flex: 1, p: { xs: 2.5, md: 4 }, maxWidth: 1350, mx: 'auto', width: '100%' }}>
-                    <Outlet />
+                    <PageTransition key={location.pathname}>
+                        <Outlet />
+                    </PageTransition>
                 </Box>
             </Box>
         </Box>

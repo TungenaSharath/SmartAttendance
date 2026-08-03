@@ -169,10 +169,16 @@ function AppRoutes() {
   );
 }
 
+import { useState } from 'react';
+import SplashLoader from './components/SplashLoader';
+
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <ThemeProvider theme={appleTheme}>
       <CssBaseline />
+      {showSplash && <SplashLoader onComplete={() => setShowSplash(false)} />}
       <BrowserRouter>
         <AuthProvider>
           <AppRoutes />
