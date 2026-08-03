@@ -114,6 +114,7 @@ async def register_teacher(
     name: str = Form(...),
     teacher_id: str = Form(...),
     password: str = Form(...),
+    role: str = Form("TEACHER"),
 ):
     if len(password) < 4:
         raise HTTPException(400, "Password must be at least 4 characters")
@@ -123,7 +124,15 @@ async def register_teacher(
     pw_hash = hash_password(password)
     pk = db.create_teacher(name, teacher_id, pw_hash)
     token = create_token(pk, name)
-    return {"message": f"Teacher '{name}' registered", "token": token, "teacher_id": pk, "name": name}
+    user_data = {"id": pk, "teacher_id": teacher_id, "name": name, "role": role}
+    return {
+        "message": f"User '{name}' registered",
+        "token": token,
+        "user": user_data,
+        "teacher_id": pk,
+        "name": name,
+        "role": role,
+    }
 
 
 @app.post("/api/auth/login")
@@ -135,12 +144,31 @@ async def login_teacher(
     if not teacher or not verify_password(password, teacher["password_hash"]):
         raise HTTPException(401, "Invalid ID or password")
     token = create_token(teacher["id"], teacher["name"])
-    return {"token": token, "teacher_id": teacher["id"], "name": teacher["name"]}
+    user_data = {
+        "id": teacher["id"],
+        "teacher_id": teacher["teacher_id"],
+        "name": teacher["name"],
+        "role": "TEACHER",
+    }
+    return {
+        "token": token,
+        "user": user_data,
+        "teacher_id": teacher["id"],
+        "name": teacher["name"],
+        "role": "TEACHER",
+    }
 
 
 @app.get("/api/auth/me")
 async def get_me(teacher: dict = Depends(get_current_teacher)):
-    return {"teacher_id": teacher["teacher_id"], "name": teacher["name"]}
+    teacher_db = db.get_teacher_by_pk(teacher["teacher_id"])
+    login_id = teacher_db["teacher_id"] if teacher_db else str(teacher["teacher_id"])
+    return {
+        "id": teacher["teacher_id"],
+        "teacher_id": login_id,
+        "name": teacher["name"],
+        "role": "TEACHER",
+    }
 
 
 # ══════════════════════════════════════════════════════════════════════
