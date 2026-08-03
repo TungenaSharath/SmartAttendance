@@ -14,19 +14,16 @@ _app: FaceAnalysis | None = None
 
 
 def init_detector() -> FaceAnalysis:
-    """Initialize the InsightFace face analysis pipeline (detection + recognition)."""
+    """Initialize the InsightFace face analysis pipeline (detection + recognition only for ultra-low memory)."""
     global _app
     if _app is not None:
         return _app
-    # Enable CPU execution provider with optimized multi-threading
-    providers = [("CPUExecutionProvider", {
-        "intra_op_num_threads": 4,
-        "inter_op_num_threads": 2
-    })]
+    # Limit to detection & recognition modules to stay well under 200MB RAM
+    allowed = ["detection", "recognition"]
     try:
-        _app = FaceAnalysis(name=MODEL_PACK, providers=providers)
+        _app = FaceAnalysis(name=MODEL_PACK, allowed_modules=allowed, providers=["CPUExecutionProvider"])
     except Exception:
-        _app = FaceAnalysis(name=MODEL_PACK, providers=["CPUExecutionProvider"])
+        _app = FaceAnalysis(name=MODEL_PACK, allowed_modules=allowed, providers=["CPUExecutionProvider"])
     _app.prepare(ctx_id=-1, det_size=DET_SIZE)
     return _app
 

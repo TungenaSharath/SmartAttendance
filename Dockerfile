@@ -1,13 +1,16 @@
-# ── SmartAttendance Production Dockerfile ──────────────────────────────
+# ── SmartAttendance Ultra-Low Memory Production Dockerfile ──────────────
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install build essential tools & runtime dependencies
+# Prevent OpenMP and BLAS multi-threading memory spikes on 512MB RAM cloud hosts
+ENV OMP_NUM_THREADS=1
+ENV OPENBLAS_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
+ENV PYTHONUNBUFFERED=1
+
+# Install runtime dependencies & curl
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    g++ \
     libgl1 \
     libglib2.0-0 \
     curl \
@@ -18,8 +21,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -U pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download InsightFace AI model pack during build stage to prevent runtime OOM memory spikes
-RUN python -c "from insightface.app import FaceAnalysis; FaceAnalysis(name='buffalo_s').prepare(ctx_id=-1)"
+# Pre-download ONLY detection & recognition modules (~150MB total RAM footprint)
+RUN python -c "from insightface.app import FaceAnalysis; FaceAnalysis(name='buffalo_s', allowed_modules=['detection', 'recognition']).prepare(ctx_id=-1)"
 
 # Copy application files
 COPY *.py ./
@@ -27,11 +30,11 @@ COPY *.py ./
 # Create data & storage directories
 RUN mkdir -p data uploads reports static templates
 
-EXPOSE 8000
+EXPOSE 10000 8000
 
 # Container Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:8000/api/health || exit 1
+  CMD curl -f http://localhost:${PORT:-10000}/api/health || exit 1
 
-# Production Command (1 worker default for low RAM cloud servers)
-CMD ["sh", "-c", "python -m uvicorn main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8000} --workers ${WORKERS:-1}"]
+# Production Command (reads PORT from Render environment, defaults to 10000)
+CMD ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1"]
