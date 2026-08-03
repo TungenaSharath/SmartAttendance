@@ -9,8 +9,11 @@ ENV OPENBLAS_NUM_THREADS=1
 ENV MKL_NUM_THREADS=1
 ENV PYTHONUNBUFFERED=1
 
-# Install runtime dependencies & curl
+# Install build essential compilers & runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
     libgl1 \
     libglib2.0-0 \
     curl \
