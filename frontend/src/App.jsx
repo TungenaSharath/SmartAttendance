@@ -29,22 +29,60 @@ import Settings from './pages/admin/Settings';
 
 const theme = createTheme({
   palette: {
-    primary: { main: '#667eea' },
-    secondary: { main: '#764ba2' },
+    mode: 'dark',
+    background: {
+      default: '#090d16',
+      paper: '#131b2e',
+    },
+    primary: {
+      main: '#38bdf8',
+      light: '#7dd3fc',
+      dark: '#0284c7',
+    },
+    secondary: {
+      main: '#a855f7',
+      light: '#c084fc',
+      dark: '#7e22ce',
+    },
+    success: {
+      main: '#10b981',
+    },
+    error: {
+      main: '#f43f5e',
+    },
+    warning: {
+      main: '#f59e0b',
+    },
+    text: {
+      primary: '#f8fafc',
+      secondary: '#94a3b8',
+    },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", system-ui, -apple-system, sans-serif',
   },
-  shape: { borderRadius: 8 },
+  shape: { borderRadius: 12 },
   components: {
     MuiButton: {
       styleOverrides: {
-        root: { textTransform: 'none', fontWeight: 600 },
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+          borderRadius: 10,
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:active': { transform: 'scale(0.97)' },
+        },
       },
     },
     MuiPaper: {
       styleOverrides: {
-        root: { backgroundImage: 'none' },
+        root: {
+          backgroundImage: 'none',
+          backgroundColor: 'rgba(19, 27, 46, 0.75)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
+        },
       },
     },
   },

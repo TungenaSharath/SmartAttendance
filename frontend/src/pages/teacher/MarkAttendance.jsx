@@ -229,15 +229,7 @@ export default function MarkAttendance() {
             {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }} onClose={() => setError('')}>{error}</Alert>}
 
             {/* Selector Controls */}
-            <Paper elevation={0} sx={{
-                p: 3,
-                borderRadius: 3,
-                background: 'rgba(255, 255, 255, 0.9)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid #e0e6ed',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-                mb: 3
-            }}>
+            <Paper elevation={0} className="glass-panel" sx={{ p: 3, mb: 3 }}>
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
                     <FormControl sx={{ minWidth: 220 }}>
                         <InputLabel>Select Subject</InputLabel>
@@ -267,7 +259,7 @@ export default function MarkAttendance() {
                         startIcon={<Add />}
                         onClick={() => setShowNewSession(true)}
                         disabled={!selSubject}
-                        sx={{ borderRadius: 2, textTransform: 'none', px: 3, py: 1.2 }}
+                        sx={{ borderRadius: 2.5, textTransform: 'none', px: 3, py: 1.2, borderColor: 'rgba(56, 189, 248, 0.5)' }}
                     >
                         New Session
                     </Button>
@@ -278,18 +270,18 @@ export default function MarkAttendance() {
             {totalCount > 0 && (
                 <Grid container spacing={2} sx={{ mb: 3 }}>
                     <Grid item xs={12} sm={3}>
-                        <Card elevation={0} sx={{ border: '1px solid #e0e6ed', borderRadius: 3, bgcolor: '#f8fafc' }}>
+                        <Card elevation={0} className="glass-panel">
                             <CardContent sx={{ p: '16px !important', display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <Group color="primary" sx={{ fontSize: 32 }} />
                                 <Box>
                                     <Typography variant="body2" color="text.secondary">Total Enrolled</Typography>
-                                    <Typography variant="h6" fontWeight={700}>{totalCount}</Typography>
+                                    <Typography variant="h6" fontWeight={700} color="text.primary">{totalCount}</Typography>
                                 </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                        <Card elevation={0} sx={{ border: '1px solid #e0e6ed', borderRadius: 3, bgcolor: '#f0fdf4' }}>
+                        <Card elevation={0} className="glass-panel">
                             <CardContent sx={{ p: '16px !important', display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <HowToReg color="success" sx={{ fontSize: 32 }} />
                                 <Box>
@@ -302,7 +294,7 @@ export default function MarkAttendance() {
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                        <Card elevation={0} sx={{ border: '1px solid #e0e6ed', borderRadius: 3, bgcolor: '#fef2f2' }}>
+                        <Card elevation={0} className="glass-panel">
                             <CardContent sx={{ p: '16px !important', display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <Cancel color="error" sx={{ fontSize: 32 }} />
                                 <Box>
@@ -313,7 +305,7 @@ export default function MarkAttendance() {
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                        <Card elevation={0} sx={{ border: '1px solid #e0e6ed', borderRadius: 3, bgcolor: '#eff6ff' }}>
+                        <Card elevation={0} className="glass-panel">
                             <CardContent sx={{ p: '16px !important', display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <CheckCircle color="info" sx={{ fontSize: 32 }} />
                                 <Box>
