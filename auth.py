@@ -19,8 +19,11 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    """Verify a password against its bcrypt hash."""
-    return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    """Verify a password against its bcrypt hash safely."""
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    except Exception:
+        return False
 
 
 # ── JWT Tokens ────────────────────────────────────────────────────────
