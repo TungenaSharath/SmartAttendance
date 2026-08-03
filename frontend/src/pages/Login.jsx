@@ -16,6 +16,17 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [showPw, setShowPw] = useState(false);
 
+    const parseError = (err) => {
+        const detail = err.response?.data?.detail;
+        if (!detail) return err.message || 'An error occurred while connecting to the server.';
+        if (typeof detail === 'string') return detail;
+        if (Array.isArray(detail)) {
+            return detail.map(item => item.msg ? `${item.loc?.slice(-1)[0] || 'field'}: ${item.msg}` : JSON.stringify(item)).join(' | ');
+        }
+        if (typeof detail === 'object') return JSON.stringify(detail);
+        return String(detail);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -27,10 +38,11 @@ export default function LoginPage() {
             } else {
                 userData = await register(form);
             }
-            const role = userData.role || 'TEACHER';
+            const role = userData?.role || 'TEACHER';
             navigate(role === 'ADMIN' ? '/admin' : role === 'HOD' ? '/hod' : '/teacher');
         } catch (err) {
-            setError(err.response?.data?.detail || 'An error occurred');
+            console.error("Auth submit error:", err);
+            setError(parseError(err));
         } finally {
             setLoading(false);
         }
