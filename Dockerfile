@@ -3,17 +3,14 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Prevent OpenMP and BLAS multi-threading memory spikes on 512MB RAM cloud hosts
+# Strict single-thread environment variables to prevent OpenMP memory spikes on 512MB RAM ceiling
 ENV OMP_NUM_THREADS=1
 ENV OPENBLAS_NUM_THREADS=1
 ENV MKL_NUM_THREADS=1
 ENV PYTHONUNBUFFERED=1
 
-# Install build essential compilers & runtime dependencies
+# Install minimal runtime dependencies & curl
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    g++ \
     libgl1 \
     libglib2.0-0 \
     curl \
@@ -21,11 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python requirements
 COPY requirements.txt .
-RUN pip install --no-cache-dir -U pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Pre-download ONLY detection & recognition modules (~150MB total RAM footprint)
-RUN python -c "from insightface.app import FaceAnalysis; FaceAnalysis(name='buffalo_s', allowed_modules=['detection', 'recognition']).prepare(ctx_id=-1)"
 
 # Copy application files
 COPY *.py ./
@@ -39,5 +32,5 @@ EXPOSE 10000 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:${PORT:-10000}/api/health || exit 1
 
-# Production Command (reads PORT from Render environment, defaults to 10000)
+# Production Command
 CMD ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1"]

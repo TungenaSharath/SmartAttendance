@@ -21,8 +21,8 @@ for d in [DATA_DIR, UPLOAD_DIR, REPORT_DIR]:
 
 # ── Model Settings ────────────────────────────────────────────────────
 MODEL_PACK = os.environ.get("ARCFACE_MODEL", "buffalo_s")
-DET_SIZE = (640, 640)
-FAST_DET_SIZE = (480, 480)
+DET_SIZE = (320, 320)
+FAST_DET_SIZE = (320, 320)
 
 # ── Recognition Thresholds ────────────────────────────────────────────
 SIMILARITY_THRESHOLD = float(os.environ.get("SIM_THRESHOLD", "0.45"))
