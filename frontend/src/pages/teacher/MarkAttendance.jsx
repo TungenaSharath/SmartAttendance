@@ -122,7 +122,7 @@ export default function MarkAttendance() {
                     const names = newOnes.map(n => n.name).join(', ');
                     setToast({
                         open: true,
-                        message: `🎉 Marked Present: ${names}`,
+                        message: `Marked Present: ${names}`,
                         severity: 'success'
                     });
                     fetchAttendance();
@@ -311,7 +311,7 @@ export default function MarkAttendance() {
                                 <Box>
                                     <Typography variant="body2" color="text.secondary">Status</Typography>
                                     <Typography variant="h6" fontWeight={700} color="primary.main">
-                                        {autoScan ? '⚡ Live Scanning' : 'Ready'}
+                                        {autoScan ? 'Live Scanning' : 'Ready'}
                                     </Typography>
                                 </Box>
                             </CardContent>

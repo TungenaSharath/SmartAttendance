@@ -114,7 +114,7 @@ export default function LoginPage() {
 
                 {!API_BASE && (
                     <Alert severity="warning" sx={{ mb: 3, borderRadius: '14px', fontSize: 13 }}>
-                        <strong>⚠️ API URL Not Connected on Vercel!</strong><br />
+                        <strong>API URL Not Connected on Vercel</strong><br />
                         Set <code>VITE_API_URL</code> in Vercel Settings to your live Railway backend link.
                     </Alert>
                 )}
