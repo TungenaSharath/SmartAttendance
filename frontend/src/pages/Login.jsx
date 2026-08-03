@@ -4,7 +4,7 @@ import {
     Box, Paper, Typography, TextField, Button, Alert, ToggleButtonGroup,
     ToggleButton, InputAdornment, IconButton, CircularProgress
 } from '@mui/material';
-import { Visibility, VisibilityOff, Login as LoginIcon, PersonAdd } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
@@ -40,74 +40,77 @@ export default function LoginPage() {
         <Box sx={{
             minHeight: '100vh',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            bgcolor: '#090d16',
-            backgroundImage: `
-                radial-gradient(at 20% 20%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
-                radial-gradient(at 80% 80%, rgba(168, 85, 247, 0.15) 0px, transparent 50%)
-            `,
+            bgcolor: '#f5f5f7',
             p: 2,
-            position: 'relative',
-            overflow: 'hidden'
         }}>
-            {/* Ambient Background Light Orbs */}
-            <Box sx={{
-                position: 'absolute', top: '-10%', left: '-10%',
-                width: 400, height: 400, borderRadius: '50%',
-                background: 'rgba(56, 189, 248, 0.12)', filter: 'blur(90px)', pointerEvents: 'none'
-            }} />
-            <Box sx={{
-                position: 'absolute', bottom: '-10%', right: '-10%',
-                width: 400, height: 400, borderRadius: '50%',
-                background: 'rgba(168, 85, 247, 0.12)', filter: 'blur(90px)', pointerEvents: 'none'
-            }} />
-
             <Paper elevation={0} sx={{
-                p: { xs: 3, sm: 4 }, width: '100%', maxWidth: 450, borderRadius: 4,
-                background: 'rgba(19, 27, 46, 0.75)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-                zIndex: 1
+                p: { xs: 3, sm: 5 },
+                width: '100%',
+                maxWidth: 420,
+                borderRadius: '24px',
+                bgcolor: '#ffffff',
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)',
+                transition: 'all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1.0)'
             }}>
-                {/* Brand Logo Header */}
+                {/* Apple Minimalist Logo & Header */}
                 <Box sx={{ textAlign: 'center', mb: 4 }}>
                     <Box sx={{
-                        width: 56, height: 56, borderRadius: 3, mx: 'auto', mb: 1.5,
-                        background: 'linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)',
+                        width: 52, height: 52, borderRadius: '16px', mx: 'auto', mb: 2,
+                        bgcolor: '#0071e3',
+                        color: '#ffffff',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 28, boxShadow: '0 0 25px rgba(56, 189, 248, 0.4)'
+                        fontSize: 24,
+                        boxShadow: '0 4px 14px rgba(0, 113, 227, 0.25)'
                     }}>
                         📸
                     </Box>
-                    <Typography variant="h4" fontWeight={800} sx={{
-                        background: 'linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)',
-                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                        letterSpacing: '-0.5px'
-                    }}>
+                    <Typography variant="h5" fontWeight={700} color="#1d1d1f" sx={{ letterSpacing: '-0.022em' }}>
                         SmartAttendance
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontWeight: 500 }}>
-                        Next-Gen AI Facial Recognition Platform
+                    <Typography variant="body2" color="#86868b" sx={{ mt: 0.5, fontWeight: 400 }}>
+                        Sign in to your campus portal
                     </Typography>
                 </Box>
 
-                {/* Mode Toggle */}
+                {/* Apple Segmented Switcher */}
                 <ToggleButtonGroup
                     value={mode} exclusive
                     onChange={(_, v) => v && setMode(v)}
-                    fullWidth size="small" sx={{
-                        mb: 3, bgcolor: 'rgba(255, 255, 255, 0.04)', p: 0.5, borderRadius: 2.5,
+                    fullWidth size="small"
+                    sx={{
+                        mb: 3,
+                        bgcolor: '#f5f5f7',
+                        p: 0.5,
+                        borderRadius: '980px',
+                        border: 'none',
                         '& .MuiToggleButton-root': {
-                            border: 'none', borderRadius: 2, textTransform: 'none', fontWeight: 600, color: '#94a3b8',
-                            '&.Mui-selected': { bgcolor: '#38bdf8', color: '#090d16', '&:hover': { bgcolor: '#7dd3fc' } }
+                            border: 'none',
+                            borderRadius: '980px',
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            color: '#86868b',
+                            fontSize: 14,
+                            py: 0.8,
+                            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+                            '&.Mui-selected': {
+                                bgcolor: '#ffffff',
+                                color: '#1d1d1f',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                                '&:hover': { bgcolor: '#ffffff' }
+                            }
                         }
                     }}
                 >
-                    <ToggleButton value="login"><LoginIcon sx={{ mr: 1, fontSize: 18 }} /> Sign In</ToggleButton>
-                    <ToggleButton value="register"><PersonAdd sx={{ mr: 1, fontSize: 18 }} /> Register</ToggleButton>
+                    <ToggleButton value="login">Sign In</ToggleButton>
+                    <ToggleButton value="register">Register</ToggleButton>
                 </ToggleButtonGroup>
 
-                {error && <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2.5, bgcolor: 'rgba(244, 63, 94, 0.1)', color: '#f43f5e', border: '1px solid rgba(244, 63, 94, 0.3)' }}>{error}</Alert>}
+                {error && (
+                    <Alert severity="error" sx={{ mb: 3, borderRadius: '14px', bgcolor: 'rgba(255, 59, 48, 0.08)', color: '#ff3b30', border: 'none' }}>
+                        {error}
+                    </Alert>
+                )}
 
                 <form onSubmit={handleSubmit}>
                     {mode === 'register' && (
@@ -116,26 +119,29 @@ export default function LoginPage() {
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                             required
+                            InputProps={{ sx: { borderRadius: '12px' } }}
                         />
                     )}
 
                     <TextField
-                        fullWidth label="Teacher ID / Username" variant="outlined" sx={{ mb: 2 }}
+                        fullWidth label="Teacher ID" variant="outlined" sx={{ mb: 2 }}
                         value={form.teacher_id}
                         onChange={(e) => setForm({ ...form, teacher_id: e.target.value })}
                         required autoFocus
+                        InputProps={{ sx: { borderRadius: '12px' } }}
                     />
 
                     <TextField
-                        fullWidth label="Password" variant="outlined" sx={{ mb: 2.5 }}
+                        fullWidth label="Password" variant="outlined" sx={{ mb: 3 }}
                         type={showPw ? 'text' : 'password'}
                         value={form.password}
                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                         required
                         InputProps={{
+                            sx: { borderRadius: '12px' },
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={() => setShowPw(!showPw)} edge="end" sx={{ color: '#94a3b8' }}>
+                                    <IconButton onClick={() => setShowPw(!showPw)} edge="end" sx={{ color: '#86868b' }}>
                                         {showPw ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
@@ -148,10 +154,10 @@ export default function LoginPage() {
                             value={form.role} exclusive
                             onChange={(_, v) => v && setForm({ ...form, role: v })}
                             fullWidth size="small" sx={{
-                                mb: 2.5, bgcolor: 'rgba(255, 255, 255, 0.04)', p: 0.5, borderRadius: 2.5,
+                                mb: 3, bgcolor: '#f5f5f7', p: 0.5, borderRadius: '980px',
                                 '& .MuiToggleButton-root': {
-                                    border: 'none', borderRadius: 2, textTransform: 'none', fontWeight: 600, color: '#94a3b8',
-                                    '&.Mui-selected': { bgcolor: '#a855f7', color: '#fff' }
+                                    border: 'none', borderRadius: '980px', textTransform: 'none', fontWeight: 600, color: '#86868b',
+                                    '&.Mui-selected': { bgcolor: '#0071e3', color: '#ffffff' }
                                 }
                             }}
                         >
@@ -165,17 +171,25 @@ export default function LoginPage() {
                         type="submit" variant="contained" fullWidth size="large"
                         disabled={loading}
                         sx={{
-                            py: 1.5, borderRadius: 2.5, fontWeight: 700, textTransform: 'none', fontSize: 16,
-                            background: 'linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)',
-                            boxShadow: '0 4px 20px rgba(56, 189, 248, 0.3)',
+                            py: 1.4,
+                            borderRadius: '980px',
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            fontSize: 16,
+                            bgcolor: '#0071e3',
+                            color: '#ffffff',
+                            boxShadow: 'none',
+                            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
                             '&:hover': {
-                                background: 'linear-gradient(135deg, #0284c7 0%, #7e22ce 100%)',
-                                boxShadow: '0 6px 25px rgba(56, 189, 248, 0.5)',
+                                bgcolor: '#0077ed',
+                                transform: 'scale(1.01)',
+                                boxShadow: '0 4px 15px rgba(0, 113, 227, 0.3)',
                             },
+                            '&:active': { transform: 'scale(0.98)' }
                         }}
                     >
                         {loading ? <CircularProgress size={24} color="inherit" /> :
-                            mode === 'login' ? 'Sign In to Portal' : 'Create Account'}
+                            mode === 'login' ? 'Continue' : 'Create Account'}
                     </Button>
                 </form>
             </Paper>

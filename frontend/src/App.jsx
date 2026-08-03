@@ -27,50 +27,63 @@ import Reports from './pages/admin/Reports';
 import SystemMetrics from './pages/admin/SystemMetrics';
 import Settings from './pages/admin/Settings';
 
-const theme = createTheme({
+// 🍎 Apple-Inspired Clean Theme
+const appleTheme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: 'light',
     background: {
-      default: '#090d16',
-      paper: '#131b2e',
+      default: '#f5f5f7', // Signature Apple Light Gray Background
+      paper: '#ffffff',
     },
     primary: {
-      main: '#38bdf8',
-      light: '#7dd3fc',
-      dark: '#0284c7',
+      main: '#0071e3', // Apple System Blue
+      light: '#479ffa',
+      dark: '#0058b0',
     },
     secondary: {
-      main: '#a855f7',
-      light: '#c084fc',
-      dark: '#7e22ce',
+      main: '#6e6e73', // Apple Neutral Gray
+      dark: '#1d1d1f',
     },
     success: {
-      main: '#10b981',
+      main: '#34c759', // Apple System Green
     },
     error: {
-      main: '#f43f5e',
+      main: '#ff3b30', // Apple System Red
     },
     warning: {
-      main: '#f59e0b',
+      main: '#ff9500', // Apple System Orange
     },
     text: {
-      primary: '#f8fafc',
-      secondary: '#94a3b8',
+      primary: '#1d1d1f', // Apple Dark Charcoal Heading Text
+      secondary: '#86868b', // Apple Muted Body Text
     },
   },
   typography: {
-    fontFamily: '"Inter", system-ui, -apple-system, sans-serif',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif',
+    h4: { fontWeight: 700, letterSpacing: '-0.022em' },
+    h5: { fontWeight: 700, letterSpacing: '-0.019em' },
+    h6: { fontWeight: 600, letterSpacing: '-0.015em' },
+    subtitle1: { letterSpacing: '-0.011em' },
+    button: { textTransform: 'none', fontWeight: 600, letterSpacing: '-0.01em' },
   },
-  shape: { borderRadius: 12 },
+  shape: { borderRadius: 18 },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
           fontWeight: 600,
-          borderRadius: 10,
-          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          '&:active': { transform: 'scale(0.97)' },
+          borderRadius: 980, // Apple Pill Shape Button
+          padding: '10px 22px',
+          boxShadow: 'none',
+          transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)',
+          '&:hover': {
+            transform: 'scale(1.02)',
+            boxShadow: '0 4px 15px rgba(0, 113, 227, 0.2)',
+          },
+          '&:active': {
+            transform: 'scale(0.98)',
+          },
         },
       },
     },
@@ -78,10 +91,10 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: 'rgba(19, 27, 46, 0.75)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
+          borderRadius: 20,
+          border: '1px solid rgba(0, 0, 0, 0.06)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)',
         },
       },
     },
@@ -158,7 +171,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={appleTheme}>
       <CssBaseline />
       <BrowserRouter>
         <AuthProvider>
