@@ -3,8 +3,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for OpenCV and curl for healthcheck
+# Install build essential tools & runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
     libgl1 \
     libglib2.0-0 \
     curl \
@@ -12,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python requirements
 COPY requirements.txt .
+RUN pip install --no-cache-dir -U pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
