@@ -68,19 +68,8 @@ export default function Layout() {
             <Box sx={{
                 p: 2.5, px: 3,
                 borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5
             }}>
-                <Box sx={{
-                    width: 34, height: 34, borderRadius: '10px',
-                    bgcolor: '#0071e3', color: '#ffffff',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 18, boxShadow: '0 2px 8px rgba(0, 113, 227, 0.25)'
-                }}>
-                    📸
-                </Box>
-                <Typography variant="h6" fontWeight={700} color="#1d1d1f" sx={{ letterSpacing: '-0.02em', fontSize: 17 }}>
+                <Typography variant="h6" fontWeight={700} color="#1d1d1f" sx={{ letterSpacing: '-0.025em', fontSize: 18 }}>
                     SmartAttendance
                 </Typography>
             </Box>

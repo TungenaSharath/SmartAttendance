@@ -53,19 +53,9 @@ export default function LoginPage() {
                 boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)',
                 transition: 'all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1.0)'
             }}>
-                {/* Apple Minimalist Logo & Header */}
+                {/* Apple Minimalist Header */}
                 <Box sx={{ textAlign: 'center', mb: 4 }}>
-                    <Box sx={{
-                        width: 52, height: 52, borderRadius: '16px', mx: 'auto', mb: 2,
-                        bgcolor: '#0071e3',
-                        color: '#ffffff',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 24,
-                        boxShadow: '0 4px 14px rgba(0, 113, 227, 0.25)'
-                    }}>
-                        📸
-                    </Box>
-                    <Typography variant="h5" fontWeight={700} color="#1d1d1f" sx={{ letterSpacing: '-0.022em' }}>
+                    <Typography variant="h4" fontWeight={700} color="#1d1d1f" sx={{ letterSpacing: '-0.03em' }}>
                         SmartAttendance
                     </Typography>
                     <Typography variant="body2" color="#86868b" sx={{ mt: 0.5, fontWeight: 400 }}>
