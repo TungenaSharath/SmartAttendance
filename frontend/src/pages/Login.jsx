@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE } from '../api';
 
 export default function LoginPage() {
     const { login, register } = useAuth();
@@ -107,6 +108,13 @@ export default function LoginPage() {
                     <ToggleButton value="login">Sign In</ToggleButton>
                     <ToggleButton value="register">Register</ToggleButton>
                 </ToggleButtonGroup>
+
+                {!API_BASE && (
+                    <Alert severity="warning" sx={{ mb: 3, borderRadius: '14px', fontSize: 13 }}>
+                        <strong>⚠️ API URL Not Connected on Vercel!</strong><br />
+                        Set <code>VITE_API_URL</code> in Vercel Settings to your live Railway backend link.
+                    </Alert>
+                )}
 
                 {error && (
                     <Alert severity="error" sx={{ mb: 3, borderRadius: '14px', bgcolor: 'rgba(255, 59, 48, 0.08)', color: '#ff3b30', border: 'none' }}>

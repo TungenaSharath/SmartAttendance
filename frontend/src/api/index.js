@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-// Use empty string to support relative domain host routing (HTTP/HTTPS agnostic)
-const API_BASE = import.meta.env.VITE_API_URL || '';
+let rawBase = (import.meta.env.VITE_API_URL || '').trim();
+if (rawBase && !rawBase.startsWith('http://') && !rawBase.startsWith('https://')) {
+    rawBase = 'https://' + rawBase;
+}
+export const API_BASE = rawBase.replace(/\/+$/, '');
 
 const api = axios.create({
     baseURL: API_BASE,
