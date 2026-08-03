@@ -29,11 +29,11 @@ _SERVER_START_TIME = time.time()
 # ── App setup ─────────────────────────────────────────────────────────
 app = FastAPI(title="Classroom Attendance System", version="2.0.0")
 
-# CORS middleware for dynamic production origins
+# CORS middleware allowing universal access from Vercel & mobile browsers
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=config.CORS_ORIGINS if "*" not in config.CORS_ORIGINS else ["*"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

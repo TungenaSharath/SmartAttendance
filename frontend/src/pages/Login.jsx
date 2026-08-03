@@ -18,6 +18,9 @@ export default function LoginPage() {
     const [showPw, setShowPw] = useState(false);
 
     const parseError = (err) => {
+        if (err.message === 'Network Error' || err.code === 'ERR_NETWORK') {
+            return 'Network Error: Unable to connect to your live Railway backend. Please check VITE_API_URL in Vercel or test your Railway server link.';
+        }
         const detail = err.response?.data?.detail;
         if (!detail) return err.message || 'An error occurred while connecting to the server.';
         if (typeof detail === 'string') return detail;
