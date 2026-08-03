@@ -18,6 +18,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -U pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pre-download InsightFace AI model pack during build stage to prevent runtime OOM memory spikes
+RUN python -c "from insightface.app import FaceAnalysis; FaceAnalysis(name='buffalo_s').prepare(ctx_id=-1)"
+
 # Copy application files
 COPY *.py ./
 
@@ -30,5 +33,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8000/api/health || exit 1
 
-# Production Command
-CMD ["sh", "-c", "python -m uvicorn main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8000} --workers ${WORKERS:-2}"]
+# Production Command (1 worker default for low RAM cloud servers)
+CMD ["sh", "-c", "python -m uvicorn main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8000} --workers ${WORKERS:-1}"]

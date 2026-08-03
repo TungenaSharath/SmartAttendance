@@ -20,7 +20,7 @@ for d in [DATA_DIR, UPLOAD_DIR, REPORT_DIR]:
     os.makedirs(d, exist_ok=True)
 
 # ── Model Settings ────────────────────────────────────────────────────
-MODEL_PACK = os.environ.get("ARCFACE_MODEL", "buffalo_l")
+MODEL_PACK = os.environ.get("ARCFACE_MODEL", "buffalo_s")
 DET_SIZE = (640, 640)
 FAST_DET_SIZE = (480, 480)
 

@@ -16,7 +16,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-super_secret_pilot_key_2026_x92a}
       - SIM_THRESHOLD=${SIM_THRESHOLD:-0.45}
       - DET_CONFIDENCE=${DET_CONFIDENCE:-0.45}
-      - ARCFACE_MODEL=${ARCFACE_MODEL:-buffalo_l}
+      - ARCFACE_MODEL=${ARCFACE_MODEL:-buffalo_s}
       - CORS_ORIGINS=${CORS_ORIGINS:-*}
     volumes:
       - attendance_data:/app/data
