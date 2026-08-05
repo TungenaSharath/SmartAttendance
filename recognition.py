@@ -168,7 +168,7 @@ def mark_attendance_from_frame(session_id: int, subject_id: int,
 
     # Ensure session marked cache is warm
     if session_id not in _MARKED_STUDENTS_CACHE:
-        existing_attendance = db.get_attendance(session_id)
+        existing_attendance = db.get_session_attendance(session_id)
         _MARKED_STUDENTS_CACHE[session_id] = {
             a["student_id"] for a in existing_attendance if a["status"] == "Present"
         }

@@ -112,6 +112,7 @@ def mark_attendance_from_frame(session_id: int, subject_id: int,
             newly = db.mark_attendance(session_id, det["student_db_id"],
                                        det["confidence"])
             marked.append({
+                "student_id": det["student_db_id"],
                 "name": det["name"],
                 "student_code": det["student_code"],
                 "confidence": det["confidence"],

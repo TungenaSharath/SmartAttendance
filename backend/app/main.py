@@ -47,9 +47,13 @@ app.add_middleware(
 @app.on_event("startup")
 def startup():
     db.init_db()
-    # Lazy-load face detection model (will be loaded on first use)
-    # from app.core.face_detection import init_detector
-    # init_detector()
+    try:
+        from app.core.face_detection import init_detector
+        print("[*] Pre-warming face detection model...")
+        init_detector()
+        print("[OK] Model pre-warmed and ready.")
+    except Exception as e:
+        print(f"[WARNING] Model pre-warming deferred: {e}")
 
 
 # ── Mount all routers ─────────────────────────────────────────────────

@@ -115,6 +115,14 @@ export default function MarkAttendance() {
             setScanMs(res.data.scan_time_ms || elapsed);
             setResult(res.data);
 
+            if (res.data.total_faces === 0) {
+                setToast({
+                    open: true,
+                    message: 'No faces detected in the frame.',
+                    severity: 'info'
+                });
+            }
+
             // Check newly marked students
             if (res.data.marked && res.data.marked.length > 0) {
                 const newOnes = res.data.marked.filter(m => m.newly_marked);
@@ -130,6 +138,9 @@ export default function MarkAttendance() {
             }
         } catch (err) {
             console.error('Frame process error:', err);
+            const msg = err.response?.data?.detail;
+            const formatted = typeof msg === 'string' ? msg : (Array.isArray(msg) ? msg.map(m => m.msg).join(', ') : (err.message || 'Failed to process frame'));
+            setError(formatted);
         } finally {
             isProcessingRef.current = false;
         }
@@ -170,9 +181,15 @@ export default function MarkAttendance() {
             setScanMs(Math.round(performance.now() - t0));
             setResult(res.data);
             fetchAttendance();
-            setToast({ open: true, message: 'Image processed successfully!', severity: 'success' });
+            if (res.data.total_faces === 0) {
+                setToast({ open: true, message: 'Image processed, but no faces were detected.', severity: 'info' });
+            } else {
+                setToast({ open: true, message: `Image processed! (${res.data.marked?.length || 0} recognized, ${res.data.unknown_count || 0} unknown)`, severity: 'success' });
+            }
         } catch (err) {
-            setError(err.response?.data?.detail || 'Failed to process image');
+            const msg = err.response?.data?.detail;
+            const formatted = typeof msg === 'string' ? msg : (Array.isArray(msg) ? msg.map(m => m.msg).join(', ') : (err.message || 'Failed to process image'));
+            setError(formatted);
         } finally {
             setLoading(false);
         }

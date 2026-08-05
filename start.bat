@@ -12,11 +12,11 @@ python seed_pilot.py --institution "CBIT Engineering College" --teacher "Prof. S
 
 echo.
 echo  [2/3] Starting FastAPI AI Backend (Port 8000)...
-start "SmartAttendance API Backend" cmd /k "python -m uvicorn main:app --host 0.0.0.0 --port 8000"
+start "SmartAttendance-Backend" cmd /k "python -m uvicorn main:app --host 0.0.0.0 --port 8000"
 
 echo.
 echo  [3/3] Starting Vite React Frontend (Port 5173)...
-start "SmartAttendance React Frontend" cmd /k "cd frontend && npm run dev"
+start "SmartAttendance-Frontend" cmd /k "cd /d %~dp0frontend && npm run dev"
 
 echo.
 echo =====================================================================
